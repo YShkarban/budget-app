@@ -1,0 +1,44 @@
+<div class="d-flex justify-content-center align-items-center full-height col">
+    <h2>My Budget app</h2>
+    <mat-form-field appearance="outline" style="border-radius: 10px;">
+      <mat-label>Enter your email</mat-label>
+      <input
+        matInput
+        placeholder="pat@example.com"
+        [formControl]="email"
+        (blur)="updateErrorMessage()"
+        required (keydown.enter)="onSignIn()"
+      />
+      @if (email.invalid) {
+      <mat-error>{{ errorMessage() }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline" style="border-radius: 10px;">
+      <mat-label>Enter your password</mat-label>
+      <input
+        matInput
+        [formControl]="password"
+        [type]="hide() ? 'password' : 'text'" (keydown.enter)="onSignIn()"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="clickEvent($event)"
+        [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="hide()"
+      >
+        <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+      </button>
+      @if (password.invalid) {
+      <mat-error>{{ errorMessage() }}</mat-error>
+      }
+    </mat-form-field>
+    <div>
+      <button (click)="onSignIn()" mat-flat-button class="w-100" style="border-radius: 10px;">
+        Sign in
+      </button>
+      @if (errorSign) {
+      <mat-error>{{ errorMessage() }}</mat-error>
+      }
+    </div>
+</div>
