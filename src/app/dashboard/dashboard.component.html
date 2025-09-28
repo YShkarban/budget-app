@@ -1,1 +1,25 @@
-<p>dashboard works!</p>
+<mat-toolbar color="white">
+  <span>Dashboard</span>
+  <span class="spacer"></span>
+  <button mat-icon-button aria-label="History">
+    <mat-icon>history</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="card-row-scroll m-3">
+  <app-balance-card
+    title="Savings"
+    [amount]="savingsSum()"
+    [color]="'green'"
+  ></app-balance-card>
+  <app-balance-card
+    title="Current balance"
+    [amount]="budgetSum()"
+  ></app-balance-card>
+  <app-balance-card
+    title="Payments"
+    [amount]="paymentSum()"
+    [color]="'red'"
+  ></app-balance-card>
+</div>
+<app-fab-menu></app-fab-menu>

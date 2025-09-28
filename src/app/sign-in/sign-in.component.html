@@ -1,44 +1,63 @@
-<div class="d-flex justify-content-center align-items-center full-height col">
-    <h2>My Budget app</h2>
-    <mat-form-field appearance="outline" style="border-radius: 10px;">
-      <mat-label>Enter your email</mat-label>
-      <input
-        matInput
-        placeholder="pat@example.com"
-        [formControl]="email"
-        (blur)="updateErrorMessage()"
-        required (keydown.enter)="onSignIn()"
-      />
-      @if (email.invalid) {
-      <mat-error>{{ errorMessage() }}</mat-error>
-      }
-    </mat-form-field>
-    <mat-form-field appearance="outline" style="border-radius: 10px;">
-      <mat-label>Enter your password</mat-label>
-      <input
-        matInput
-        [formControl]="password"
-        [type]="hide() ? 'password' : 'text'" (keydown.enter)="onSignIn()"
-      />
-      <button
-        mat-icon-button
-        matSuffix
-        (click)="clickEvent($event)"
-        [attr.aria-label]="'Hide password'"
-        [attr.aria-pressed]="hide()"
-      >
-        <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
-      </button>
-      @if (password.invalid) {
-      <mat-error>{{ errorMessage() }}</mat-error>
-      }
-    </mat-form-field>
-    <div>
-      <button (click)="onSignIn()" mat-flat-button class="w-100" style="border-radius: 10px;">
-        Sign in
-      </button>
-      @if (errorSign) {
-      <mat-error>{{ errorMessage() }}</mat-error>
-      }
+<div class="container h-100">
+  <div class="row h-100 justify-content-center align-items-center">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+      <div class="card p-4">
+        <h2 class="text-center mb-4">My Budget app</h2>
+        <mat-form-field
+          appearance="outline"
+          class="w-100 mb-3"
+          style="border-radius: 10px"
+        >
+          <mat-label>Enter your email</mat-label>
+          <input
+            matInput
+            placeholder="pat@example.com"
+            [formControl]="email"
+            (blur)="updateErrorMessage()"
+            required
+            (keydown.enter)="onSignIn()"
+          />
+          @if (email.invalid) {
+          <mat-error>{{ errorMessage() }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field
+          appearance="outline"
+          class="w-100 mb-3"
+          style="border-radius: 10px"
+        >
+          <mat-label>Enter your password</mat-label>
+          <input
+            matInput
+            [formControl]="password"
+            [type]="hide() ? 'password' : 'text'"
+            (keydown.enter)="onSignIn()"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="clickEvent($event)"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide()"
+          >
+            <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+          </button>
+          @if (password.invalid) {
+          <mat-error>{{ errorMessage() }}</mat-error>
+          }
+        </mat-form-field>
+        <button
+          (click)="onSignIn()"
+          mat-flat-button
+          class="w-100 mb-2"
+          style="border-radius: 10px"
+        >
+          Sign in
+        </button>
+        @if (errorSign) {
+        <mat-error class="d-block text-center">{{ errorMessage() }}</mat-error>
+        }
+      </div>
     </div>
+  </div>
 </div>
