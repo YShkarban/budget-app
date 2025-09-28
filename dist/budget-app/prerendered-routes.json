@@ -1,7 +1,0 @@
-{
-  "routes": [
-    "/",
-    "/dashboard",
-    "/sign-in"
-  ]
-}
