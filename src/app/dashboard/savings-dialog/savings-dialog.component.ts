@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Savings } from '../../../interfaces/savings';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-savings-dialog',
@@ -37,6 +38,7 @@ export class SavingsDialogComponent {
   private dialogRef = inject(MatDialogRef<SavingsDialogComponent>);
   private afAuth = inject(AngularFireAuth);
   private db = inject(AngularFirestore);
+    private snackbar = inject(MatSnackBar);
 
   amount: number = 0;
   description: string = '';
@@ -66,6 +68,9 @@ export class SavingsDialogComponent {
       },
       { merge: true }
     );
+    this.snackbar.open('Funds added to savings successfully', 'Close', {
+      duration: 3000,
+    });
     this.dialogRef.close(true);
   }
 }
