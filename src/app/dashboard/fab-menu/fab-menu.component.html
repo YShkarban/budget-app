@@ -1,23 +1,36 @@
-<div style="position: fixed; bottom: 32px; right: 32px; z-index: 1000;">
-  <!-- FAB Menu Buttons (shown when fabMenuOpen is true) -->
+<div class="fab-menu-position">
   @if(fabMenuOpen){
-    <div style="position: absolute; bottom: 72px; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 16px;">
-      <button mat-flat-button color="primary" (click)="onFabClick(1)">
-        <mat-icon>add</mat-icon>
-        Add
-      </button>
-      <button mat-flat-button color="primary" (click)="onFabClick(2)">
-        <mat-icon>send</mat-icon>
-        Payment
-      </button>
-      <button mat-flat-button color="primary" (click)="onFabClick(3)">
-        <mat-icon>save_alt</mat-icon>
-        Savings
-      </button>
-    </div>
+  <div class="fab-position">
+    <button
+      class="button-fab"
+      mat-flat-button
+      color="primary"
+      (click)="onFabClick(1)"
+    >
+      <mat-icon>add</mat-icon>
+      Top up
+    </button>
+    <button
+      class="button-fab"
+      mat-flat-button
+      color="primary"
+      (click)="onFabClick(2)"
+    >
+      <mat-icon>send</mat-icon>
+      Payment
+    </button>
+    <button
+      class="button-fab"
+      mat-flat-button
+      color="primary"
+      (click)="onFabClick(3)"
+    >
+      <mat-icon>save_alt</mat-icon>
+      Savings
+    </button>
+  </div>
   }
-  <!-- Main FAB Button -->
   <button mat-fab color="primary" (click)="fabMenuOpen = !fabMenuOpen">
-    <mat-icon>{{ fabMenuOpen ? 'close' : 'add' }}</mat-icon>
+    <mat-icon>{{ fabMenuOpen ? "close" : "add" }}</mat-icon>
   </button>
 </div>

@@ -19,6 +19,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map, Observable } from 'rxjs';
 import { PaymentType } from '../../../interfaces/payment-type';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payment-dialog',
@@ -43,6 +44,7 @@ export class PaymentDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PaymentDialogComponent>);
   private afAuth = inject(AngularFireAuth);
   private db = inject(AngularFirestore);
+  private snackbar = inject(MatSnackBar);
 
   myControl = new FormControl('');
   amount: number = 0;
@@ -99,7 +101,7 @@ export class PaymentDialogComponent implements OnInit {
       date: new Date(),
       user: user?.uid || 'defaultUser',
       type: this.myControl.value || 'Other',
-      month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      month: month,
     };
 
     const docId = `${userId}`;
@@ -114,6 +116,10 @@ export class PaymentDialogComponent implements OnInit {
       },
       { merge: true }
     );
+
+    this.snackbar.open('Payment saved successfully', 'Close', {
+      duration: 3000,
+    });
     this.dialogRef.close(true);
   }
 }
