@@ -7,15 +7,11 @@ import { FabMenuComponent } from './fab-menu/fab-menu.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BalanceCardComponent } from './balance-card/balance-card.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  AngularFirestore,
-} from '@angular/fire/compat/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { map, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { computed } from '@angular/core';
-
-
-
+import { AddCategoryDialogComponent } from './add-category-dialog/add-category-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -83,4 +79,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  addCategory() {
+    const dialogRef = this.dialog.open(AddCategoryDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
 }
