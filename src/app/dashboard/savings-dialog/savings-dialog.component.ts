@@ -38,7 +38,7 @@ export class SavingsDialogComponent {
   private dialogRef = inject(MatDialogRef<SavingsDialogComponent>);
   private afAuth = inject(AngularFireAuth);
   private db = inject(AngularFirestore);
-    private snackbar = inject(MatSnackBar);
+  private snackbar = inject(MatSnackBar);
 
   amount: number = 0;
   description: string = '';
@@ -53,18 +53,14 @@ export class SavingsDialogComponent {
       description: this.description,
       date: new Date(),
       user: user?.uid || 'defaultUser',
-      month: month,
     };
-    
-    const docId = `${userId}`;
-    const transactionDocRef = this.db.collection('transactions').doc(docId);
 
+    const docId = `${userId}`;
+
+    const transactionDocRef = this.db.collection('savings').doc(docId);
     await transactionDocRef.set(
       {
-        user: userId,
-        month,
-        date: new Date(),
-        savings: firebase.firestore.FieldValue.arrayUnion(saving),
+        array: firebase.firestore.FieldValue.arrayUnion(saving),
       },
       { merge: true }
     );

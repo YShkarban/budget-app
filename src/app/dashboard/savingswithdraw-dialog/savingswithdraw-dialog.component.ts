@@ -62,7 +62,6 @@ export class SavingswithdrawDialogComponent {
       description: this.description,
       date: new Date(),
       user: user?.uid || 'defaultUser',
-      month: month,
     };
 
     const docId = `${userId}`;
@@ -74,7 +73,14 @@ export class SavingswithdrawDialogComponent {
         month,
         date: new Date(),
         budget: firebase.firestore.FieldValue.arrayUnion(budget),
-        savings: firebase.firestore.FieldValue.arrayUnion(saving),
+      },
+      { merge: true }
+    );
+
+    const savingsDocRef = this.db.collection('savings').doc(docId);
+    await savingsDocRef.set(
+      {
+        array: firebase.firestore.FieldValue.arrayUnion(saving),
       },
       { merge: true }
     );
