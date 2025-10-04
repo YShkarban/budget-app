@@ -49,20 +49,6 @@ export class PaymentDialogComponent implements OnInit {
   myControl = new FormControl('');
   amount: number = 0;
   description: string = '';
-  // paytype: string[] = [
-  //   'Groceries',
-  //   'Apartment',
-  //   'Internet',
-  //   'Phone',
-  //   'Kuma',
-  //   'Restaurants',
-  //   'Home chemicals',
-  //   'Selfcare',
-  //   'Transport',
-  //   'Clothes',
-  //   'Other',
-  // ];
-
   paymentType$ = this.db
     .collection('payment-type')
     .valueChanges({ idField: 'id' })
@@ -80,14 +66,6 @@ export class PaymentDialogComponent implements OnInit {
   });
 
   async ngOnInit() {
-    // const user = await this.afAuth.currentUser;
-    // const userId = user?.uid || 'defaultUser';
-    // const docId = `${userId}`;
-    // const transactionDocRef = this.db.collection('payment-type').doc(docId);
-    //   let payment: PaymentType = {
-    //     name: this.paytype,
-    //   };
-    //   transactionDocRef.set(payment);
   }
 
   async send() {

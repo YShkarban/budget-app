@@ -7,15 +7,13 @@ import { FabMenuComponent } from './fab-menu/fab-menu.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BalanceCardComponent } from './balance-card/balance-card.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  AngularFirestore,
-} from '@angular/fire/compat/firestore';
-import { map, Observable } from 'rxjs';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { filter, map, Observable, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { computed } from '@angular/core';
-
-
-
+import { AddCategoryDialogComponent } from './add-category-dialog/add-category-dialog.component';
+import { Savings } from '../../interfaces/savings';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,6 +35,7 @@ export class DashboardComponent implements OnInit {
   private dialog = inject(MatDialog);
   private snackbar = inject(MatSnackBar);
   private db = inject(AngularFirestore);
+  private authService = inject(AuthService);
 
   fabMenuOpen = false;
 
@@ -81,6 +80,24 @@ export class DashboardComponent implements OnInit {
     this.savingsArray().reduce((acc, item) => acc + (item.amount ?? 0), 0)
   );
 
+  savings$ = this.authService.userId$.pipe(
+    filter((uid): uid is string => !!uid), // only continue if logged in
+    switchMap((uid) => this.db.collection('savings').doc(uid).valueChanges()),
+    map((doc: any) => doc?.array ?? [])
+  ) as Observable<Savings[]>;
+
+  savingsSignal = toSignal(this.savings$, { initialValue: [] });
+
+  savingsTotal = computed(() =>
+    this.savingsSignal().reduce((acc, item) => acc + (item.amount ?? 0), 0)
+  );
+
   ngOnInit(): void {}
 
+  addCategory() {
+    const dialogRef = this.dialog.open(AddCategoryDialogComponent);
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
 }

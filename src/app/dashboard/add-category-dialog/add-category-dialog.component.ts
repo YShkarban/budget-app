@@ -1,24 +1,23 @@
 import { Component, inject } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatCard,
+  MatCardActions,
+  MatCardContent,
   MatCardHeader,
   MatCardTitle,
-  MatCardContent,
-  MatCardActions,
 } from '@angular/material/card';
 import { MatDialogRef } from '@angular/material/dialog';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import firebase from 'firebase/compat/app';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
-import { Savings } from '../../../interfaces/savings';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import firebase from 'firebase/compat/app';
 
 @Component({
-  selector: 'app-savings-dialog',
+  selector: 'app-add-category-dialog',
   standalone: true,
   imports: [
     MatCard,
@@ -31,40 +30,38 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatInputModule,
     FormsModule,
   ],
-  templateUrl: './savings-dialog.component.html',
-  styleUrl: './savings-dialog.component.scss',
+  templateUrl: './add-category-dialog.component.html',
+  styleUrl: './add-category-dialog.component.scss',
 })
-export class SavingsDialogComponent {
-  private dialogRef = inject(MatDialogRef<SavingsDialogComponent>);
+export class AddCategoryDialogComponent {
+  private dialogRef = inject(MatDialogRef<AddCategoryDialogComponent>);
   private afAuth = inject(AngularFireAuth);
   private db = inject(AngularFirestore);
   private snackbar = inject(MatSnackBar);
 
-  amount: number = 0;
-  description: string = '';
+  categoryName: string = '';
 
   async send() {
+    this.categoryName = this.categoryName.trim();
+    if (this.categoryName.length === 0) {
+      this.snackbar.open('Category name is empty', 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
+
     const user = await this.afAuth.currentUser;
     const userId = user?.uid || 'defaultUser';
-    const month = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-
-    const saving: Savings = {
-      amount: this.amount,
-      description: this.description,
-      date: new Date(),
-      user: user?.uid || 'defaultUser',
-    };
-
     const docId = `${userId}`;
 
-    const transactionDocRef = this.db.collection('savings').doc(docId);
+    const transactionDocRef = this.db.collection('payment-type').doc(docId);
     await transactionDocRef.set(
       {
-        array: firebase.firestore.FieldValue.arrayUnion(saving),
+        name: firebase.firestore.FieldValue.arrayUnion(this.categoryName),
       },
       { merge: true }
     );
-    this.snackbar.open('Funds added to savings successfully', 'Close', {
+    this.snackbar.open('Category was added', 'Close', {
       duration: 3000,
     });
     this.dialogRef.close(true);

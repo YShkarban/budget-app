@@ -4,7 +4,6 @@ import { Savings } from "./savings";
 
 export interface Transaction {
   id?: string;
-  savings: Savings[];
   payment: Payment[];
   budget: Budget[];
   month: Date;
