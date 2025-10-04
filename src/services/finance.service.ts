@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { filter, map, Observable, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Savings } from '../interfaces/savings';
+import { PaymentType } from '../interfaces/payment-type';
 
 @Injectable({
   providedIn: 'root',
@@ -25,15 +26,9 @@ export class FinanceService {
     .valueChanges({ idField: 'id' })
     .pipe(map((items: any[]) => items.flatMap((item) => item.budget ?? [])));
 
-  savingsArray$ = this.db
-    .collection('transactions')
-    .valueChanges({ idField: 'id' })
-    .pipe(map((items: any[]) => items.flatMap((item) => item.savings ?? [])));
-
   // --- signals ---
   paymentArray = toSignal(this.paymentArray$, { initialValue: [] });
   budgetArray = toSignal(this.budgetArray$, { initialValue: [] });
-  savingsArray = toSignal(this.savingsArray$, { initialValue: [] });
 
   // --- computed sums ---
   paymentSum = computed(() =>
@@ -42,10 +37,6 @@ export class FinanceService {
 
   budgetSum = computed(() =>
     this.budgetArray().reduce((acc, item) => acc + (item.amount ?? 0), 0)
-  );
-
-  savingsSum = computed(() =>
-    this.savingsArray().reduce((acc, item) => acc + (item.amount ?? 0), 0)
   );
 
   // --- user savings (separate collection) ---
@@ -60,4 +51,22 @@ export class FinanceService {
   savingsTotal = computed(() =>
     this.savingsSignal().reduce((acc, item) => acc + (item.amount ?? 0), 0)
   );
+
+  // payment types
+  paymentType$ = this.db
+    .collection('payment-type')
+    .valueChanges({ idField: 'id' })
+    .pipe(
+      map((items: any[]) => {
+        // If items[0].name is an array, flatten it
+        if (items.length && Array.isArray(items[0].name)) {
+          return items[0].name.map((name: string) => ({ name }));
+        }
+        return items;
+      })
+    ) as Observable<PaymentType[]>;
+
+  paymentTypeArray = toSignal(this.paymentType$, {
+    initialValue: [] as PaymentType[],
+  });
 }
