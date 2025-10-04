@@ -9,6 +9,42 @@
     @if(title === 'Savings') {
     <button mat-button (click)="doSavingsWithdraw()">Withdraw</button>
     }
-    <button mat-button>History</button>
+    <button mat-icon-button (click)="toggleHistory()" aria-label="History">
+      @if(expanded){
+      <mat-icon>eject</mat-icon>
+      }@else{
+      <mat-icon>history</mat-icon>}
+    </button>
   </mat-card-actions>
 </mat-card>
+@if(expanded) {
+<mat-card class="mb-3">
+  <mat-card-header>
+    <mat-card-title>History</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <td mat-cell *matCellDef="let element">{{ element.amount }}</td>
+      </ng-container>
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+      </ng-container>
+      @if(title === 'Payments'){
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let element">{{ element.type }}</td>
+      </ng-container>
+      }
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.date.toDate() | date:'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayColumnsShow"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayColumnsShow"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>
+}
