@@ -14,6 +14,7 @@ import { computed } from '@angular/core';
 import { AddCategoryDialogComponent } from './add-category-dialog/add-category-dialog.component';
 import { Savings } from '../../interfaces/savings';
 import { AuthService } from '../../services/auth.service';
+import { FinanceService } from '../../services/finance.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,64 +34,13 @@ import { AuthService } from '../../services/auth.service';
 })
 export class DashboardComponent implements OnInit {
   private dialog = inject(MatDialog);
-  private snackbar = inject(MatSnackBar);
-  private db = inject(AngularFirestore);
-  private authService = inject(AuthService);
+  financeService = inject(FinanceService);
 
   fabMenuOpen = false;
 
   now = new Date();
   firstDay = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
   lastDay = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
-
-  paymentArray$ = this.db
-    .collection('transactions')
-    .valueChanges({ idField: 'id' })
-    .pipe(
-      map((items: any[]) => items.flatMap((item) => item.payment ?? []))
-    ) as Observable<any[]>;
-
-  budgetArray$ = this.db
-    .collection('transactions')
-    .valueChanges({ idField: 'id' })
-    .pipe(
-      map((items: any[]) => items.flatMap((item) => item.budget ?? []))
-    ) as Observable<any[]>;
-
-  savingsArray$ = this.db
-    .collection('transactions')
-    .valueChanges({ idField: 'id' })
-    .pipe(
-      map((items: any[]) => items.flatMap((item) => item.savings ?? []))
-    ) as Observable<any[]>;
-
-  paymentArray = toSignal(this.paymentArray$, { initialValue: [] });
-  budgetArray = toSignal(this.budgetArray$, { initialValue: [] });
-  savingsArray = toSignal(this.savingsArray$, { initialValue: [] });
-
-  paymentSum = computed(() =>
-    this.paymentArray().reduce((acc, item) => acc + (item.amount ?? 0), 0)
-  );
-
-  budgetSum = computed(() =>
-    this.budgetArray().reduce((acc, item) => acc + (item.amount ?? 0), 0)
-  );
-
-  savingsSum = computed(() =>
-    this.savingsArray().reduce((acc, item) => acc + (item.amount ?? 0), 0)
-  );
-
-  savings$ = this.authService.userId$.pipe(
-    filter((uid): uid is string => !!uid), // only continue if logged in
-    switchMap((uid) => this.db.collection('savings').doc(uid).valueChanges()),
-    map((doc: any) => doc?.array ?? [])
-  ) as Observable<Savings[]>;
-
-  savingsSignal = toSignal(this.savings$, { initialValue: [] });
-
-  savingsTotal = computed(() =>
-    this.savingsSignal().reduce((acc, item) => acc + (item.amount ?? 0), 0)
-  );
 
   ngOnInit(): void {}
 

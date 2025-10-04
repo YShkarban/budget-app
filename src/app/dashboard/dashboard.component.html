@@ -4,24 +4,24 @@
   <button mat-icon-button aria-label="Category" (click)="addCategory()">
     <mat-icon>label</mat-icon>
   </button>
-  <button mat-icon-button aria-label="History">
-    <mat-icon>history</mat-icon>
-  </button>
 </mat-toolbar>
 
 <div class="col m-3">
   <app-balance-card
     title="Savings"
-    [amount]="savingsTotal()"
+    [amount]="financeService.savingsTotal()"
     [color]="'green'"
+    [dataSource]="financeService.savingsSignal()"
   ></app-balance-card>
   <app-balance-card
     title="Current balance"
-    [amount]="budgetSum()"
+    [amount]="financeService.budgetSum()"
+    [dataSource]="financeService.budgetArray()"
   ></app-balance-card>
   <app-balance-card
     title="Payments"
-    [amount]="paymentSum()"
+    [amount]="financeService.paymentSum()"
+    [dataSource]="financeService.paymentArray()"
     [color]="'red'"
   ></app-balance-card>
 </div>
