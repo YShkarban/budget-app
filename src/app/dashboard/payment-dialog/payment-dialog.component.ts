@@ -20,6 +20,7 @@ import { map, Observable } from 'rxjs';
 import { PaymentType } from '../../../interfaces/payment-type';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FinanceService } from '../../../services/finance.service';
 
 @Component({
   selector: 'app-payment-dialog',
@@ -45,28 +46,13 @@ export class PaymentDialogComponent implements OnInit {
   private afAuth = inject(AngularFireAuth);
   private db = inject(AngularFirestore);
   private snackbar = inject(MatSnackBar);
+  financeService = inject(FinanceService);
 
   myControl = new FormControl('');
   amount: number = 0;
   description: string = '';
-  paymentType$ = this.db
-    .collection('payment-type')
-    .valueChanges({ idField: 'id' })
-    .pipe(
-      map((items: any[]) => {
-        // If items[0].name is an array, flatten it
-        if (items.length && Array.isArray(items[0].name)) {
-          return items[0].name.map((name: string) => ({ name }));
-        }
-        return items;
-      })
-    ) as Observable<PaymentType[]>;
-  paymentType = toSignal(this.paymentType$, {
-    initialValue: [] as PaymentType[],
-  });
 
-  async ngOnInit() {
-  }
+  async ngOnInit() {}
 
   async send() {
     const user = await this.afAuth.currentUser;

@@ -24,7 +24,7 @@
           [matAutocomplete]="auto"
         />
         <mat-autocomplete #auto="matAutocomplete">
-          @for (option of paymentType(); track option) {
+          @for (option of financeService.paymentTypeArray(); track option) {
           <mat-option [value]="option.name">{{ option.name }}</mat-option>
           }
         </mat-autocomplete>
