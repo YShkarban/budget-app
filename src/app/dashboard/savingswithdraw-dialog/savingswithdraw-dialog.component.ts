@@ -64,8 +64,12 @@ export class SavingswithdrawDialogComponent {
       user: user?.uid || 'defaultUser',
     };
 
+    const docIdTransaction = `${userId}_${month.getFullYear()}-${month.getMonth() + 1}`;
     const docId = `${userId}`;
-    const transactionDocRef = this.db.collection('transactions').doc(docId);
+    
+    const transactionDocRef = this.db
+      .collection('transactions')
+      .doc(docIdTransaction);
 
     await transactionDocRef.set(
       {

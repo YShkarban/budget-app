@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,15 +9,12 @@ import {
   MatCardContent,
   MatCardActions,
 } from '@angular/material/card';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Payment } from '../../../interfaces/payment';
 import firebase from 'firebase/compat/app';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map, Observable } from 'rxjs';
-import { PaymentType } from '../../../interfaces/payment-type';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FinanceService } from '../../../services/finance.service';
@@ -48,6 +45,8 @@ export class PaymentDialogComponent implements OnInit {
   private snackbar = inject(MatSnackBar);
   financeService = inject(FinanceService);
 
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { selectedDate: Date }) {}
+
   myControl = new FormControl('');
   amount: number = 0;
   description: string = '';
@@ -57,7 +56,7 @@ export class PaymentDialogComponent implements OnInit {
   async send() {
     const user = await this.afAuth.currentUser;
     const userId = user?.uid || 'defaultUser';
-    const month = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const month = new Date(this.data.selectedDate);
 
     const payment: Payment = {
       amount: this.amount,
@@ -68,7 +67,7 @@ export class PaymentDialogComponent implements OnInit {
       month: month,
     };
 
-    const docId = `${userId}`;
+    const docId = `${userId}_${month.getFullYear()}-${month.getMonth() + 1}`;
     const transactionDocRef = this.db.collection('transactions').doc(docId);
 
     await transactionDocRef.set(

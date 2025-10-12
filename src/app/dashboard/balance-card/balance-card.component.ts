@@ -9,7 +9,6 @@ import {
 } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { SavingswithdrawDialogComponent } from '../savingswithdraw-dialog/savingswithdraw-dialog.component';
-import { TransactionHistory } from '../../../interfaces/history';
 import { MatTableModule } from '@angular/material/table';
 import { FinanceService } from '../../../services/finance.service';
 import { MatIconModule } from '@angular/material/icon';
