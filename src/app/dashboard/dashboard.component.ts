@@ -6,15 +6,31 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FabMenuComponent } from './fab-menu/fab-menu.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BalanceCardComponent } from './balance-card/balance-card.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { filter, map, Observable, switchMap } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { computed } from '@angular/core';
 import { AddCategoryDialogComponent } from './add-category-dialog/add-category-dialog.component';
-import { Savings } from '../../interfaces/savings';
-import { AuthService } from '../../services/auth.service';
 import { FinanceService } from '../../services/finance.service';
+import { format } from 'date-fns';
+import {
+  MatDatepicker,
+  MatDatepickerModule,
+} from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+import * as _moment from 'moment';
+import { default as _rollupMoment } from 'moment';
+
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'MM/YYYY',
+  },
+  display: {
+    dateInput: 'MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-dashboard',
@@ -28,9 +44,15 @@ import { FinanceService } from '../../services/finance.service';
     MatButtonModule,
     MatToolbarModule,
     BalanceCardComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
+  providers: [provideMomentDateAdapter(MY_FORMATS)],
 })
 export class DashboardComponent implements OnInit {
   private dialog = inject(MatDialog);
@@ -42,6 +64,8 @@ export class DashboardComponent implements OnInit {
   firstDay = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
   lastDay = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
 
+  selectedDate = new Date();
+
   ngOnInit(): void {}
 
   addCategory() {
@@ -49,5 +73,20 @@ export class DashboardComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       console.log(`Dialog result: ${result}`);
     });
+  }
+
+  setMonthAndYear(date: Date, datepicker: MatDatepicker<Date>) {
+    this.selectedDate = date;
+    const yearMonth = format(date, 'yyyy-MM');
+    this.financeService.setYearMonth(yearMonth);
+    datepicker.close();
+  }
+
+  onDateChange(event: any) {
+    const date = event.value;
+    if (date) {
+      const yearMonth = format(date, 'yyyy-MM');
+      this.financeService.setYearMonth(yearMonth);
+    }
   }
 }

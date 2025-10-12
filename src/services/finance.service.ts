@@ -1,10 +1,11 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AuthService } from './auth.service';
-import { filter, map, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, map, Observable, switchMap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Savings } from '../interfaces/savings';
 import { PaymentType } from '../interfaces/payment-type';
+import { format } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -13,18 +14,52 @@ export class FinanceService {
   private db = inject(AngularFirestore);
   private authService = inject(AuthService);
 
-  constructor() {}
+  constructor() {
+  }
+
+  // Add yearMonth stream
+  private yearMonth$ = new BehaviorSubject<string>(
+    format(new Date(), 'yyyy-MM')
+  );
 
   // --- raw firestore streams ---
-  paymentArray$ = this.db
-    .collection('transactions')
-    .valueChanges({ idField: 'id' })
-    .pipe(map((items: any[]) => items.flatMap((item) => item.payment ?? [])));
+  paymentArray$ = combineLatest([
+    this.authService.userId$.pipe(filter((uid): uid is string => !!uid)),
+    this.yearMonth$,
+  ]).pipe(
+    switchMap(([uid, yearMonth]) =>
+      this.db
+        .collection('transactions')
+        .doc(`${uid}_${yearMonth}`)
+        .valueChanges()
+        .pipe(
+          map((doc: any) => {
+            // Ensure we always return an array
+            const payments = doc?.payment || [];
+            return Array.isArray(payments) ? payments : [];
+          })
+        )
+    )
+  ) as Observable<any[]>;
 
-  budgetArray$ = this.db
-    .collection('transactions')
-    .valueChanges({ idField: 'id' })
-    .pipe(map((items: any[]) => items.flatMap((item) => item.budget ?? [])));
+  budgetArray$ = combineLatest([
+    this.authService.userId$.pipe(filter((uid): uid is string => !!uid)),
+    this.yearMonth$,
+  ]).pipe(
+    switchMap(([uid, yearMonth]) =>
+      this.db
+        .collection('transactions')
+        .doc(`${uid}_${yearMonth}`)
+        .valueChanges()
+        .pipe(
+          map((doc: any) => {
+            // Ensure we always return an array
+            const budgets = doc?.budget || [];
+            return Array.isArray(budgets) ? budgets : [];
+          })
+        )
+    )
+  ) as Observable<any[]>;
 
   // --- signals ---
   paymentArray = toSignal(this.paymentArray$, { initialValue: [] });
@@ -69,4 +104,14 @@ export class FinanceService {
   paymentTypeArray = toSignal(this.paymentType$, {
     initialValue: [] as PaymentType[],
   });
+
+  // Add method to change year-month
+  setYearMonth(yearMonth: string) {
+    this.yearMonth$.next(yearMonth);
+  }
+
+  // Get current year-month
+  getCurrentYearMonth() {
+    return this.yearMonth$.getValue();
+  }
 }

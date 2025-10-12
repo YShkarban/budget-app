@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +9,7 @@ import {
   MatCardContent,
   MatCardActions,
 } from '@angular/material/card';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Budget } from '../../../interfaces/budget';
 import firebase from 'firebase/compat/app';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -40,13 +40,16 @@ export class BudgetDialogComponent {
   private db = inject(AngularFirestore);
   private snackbar = inject(MatSnackBar);
 
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { selectedDate: Date }) {}
+
   amount: number = 0;
   description: string = '';
 
   async send() {
+    console.log(this.data.selectedDate);
     const user = await this.afAuth.currentUser;
     const userId = user?.uid || 'defaultUser';
-    const month = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const month = new Date(this.data.selectedDate);
 
     const budget: Budget = {
       amount: this.amount,
@@ -56,7 +59,7 @@ export class BudgetDialogComponent {
       month: month,
     };
 
-    const docId = `${userId}`;
+    const docId = `${userId}_${month.getFullYear()}-${month.getMonth() + 1}`;
     const transactionDocRef = this.db.collection('transactions').doc(docId);
 
     await transactionDocRef.set(
@@ -68,7 +71,9 @@ export class BudgetDialogComponent {
       },
       { merge: true }
     );
-    this.snackbar.open('Funds added to budget successfully', 'Close', { duration: 3000 });
+    this.snackbar.open('Funds added to budget successfully', 'Close', {
+      duration: 3000,
+    });
     this.dialogRef.close(true);
   }
 }

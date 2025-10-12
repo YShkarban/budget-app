@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,19 +16,23 @@ import { BudgetDialogComponent } from '../budget-dialog/budget-dialog.component'
 })
 export class FabMenuComponent {
   private dialog = inject(MatDialog);
+  @Input() selectedDate!: Date;
 
   fabMenuOpen = false;
 
   onFabClick(action: number) {
     this.fabMenuOpen = false;
+    const dialogConfig = {
+      data: { selectedDate: this.selectedDate },
+    };
 
     if (action === 1) {
-      const dialogRef = this.dialog.open(BudgetDialogComponent);
+      const dialogRef = this.dialog.open(BudgetDialogComponent, dialogConfig);
       dialogRef.afterClosed().subscribe((result) => {
         console.log(`Dialog result: ${result}`);
       });
     } else if (action === 2) {
-      const dialogRef = this.dialog.open(PaymentDialogComponent);
+      const dialogRef = this.dialog.open(PaymentDialogComponent, dialogConfig);
       dialogRef.afterClosed().subscribe((result) => {
         console.log(`Dialog result: ${result}`);
       });
