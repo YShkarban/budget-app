@@ -19,6 +19,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import * as _moment from 'moment';
 import { default as _rollupMoment } from 'moment';
+import { Router } from 'express';
+import { RouterLink } from "@angular/router";
 
 export const MY_FORMATS = {
   parse: {
@@ -41,7 +43,6 @@ export const MY_FORMATS = {
     MatMenuModule,
     MatDialogModule,
     FabMenuComponent,
-    MatButtonModule,
     MatToolbarModule,
     BalanceCardComponent,
     MatFormFieldModule,
@@ -49,12 +50,14 @@ export const MY_FORMATS = {
     MatDatepickerModule,
     FormsModule,
     ReactiveFormsModule,
-  ],
+    RouterLink
+],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   providers: [provideMomentDateAdapter(MY_FORMATS)],
 })
 export class DashboardComponent implements OnInit {
+  //router = inject(Router);
   private dialog = inject(MatDialog);
   financeService = inject(FinanceService);
 
@@ -66,7 +69,11 @@ export class DashboardComponent implements OnInit {
 
   selectedDate = new Date();
 
-  ngOnInit(): void {}
+  pastMonth: boolean = false;
+
+  ngOnInit(): void {
+    this.checkSelectedMonth();
+  }
 
   addCategory() {
     const dialogRef = this.dialog.open(AddCategoryDialogComponent);
@@ -79,6 +86,7 @@ export class DashboardComponent implements OnInit {
     this.selectedDate = date;
     const yearMonth = format(date, 'yyyy-MM');
     this.financeService.setYearMonth(yearMonth);
+    this.checkSelectedMonth();
     datepicker.close();
   }
 
@@ -88,5 +96,9 @@ export class DashboardComponent implements OnInit {
       const yearMonth = format(date, 'yyyy-MM');
       this.financeService.setYearMonth(yearMonth);
     }
+  }
+
+  checkSelectedMonth() {
+    this.pastMonth = this.firstDay > this.selectedDate;
   }
 }

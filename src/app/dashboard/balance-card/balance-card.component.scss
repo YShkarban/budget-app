@@ -2,3 +2,15 @@ mat-card {
   min-width: 250px;
   flex: 0 0 auto;
 }
+
+.mdc-data-table__cell, .mdc-data-table__header-cell {
+  padding: 0 4px 0 4px !important;
+}
+
+.mat-mdc-card-content {
+  padding: 0 6px 0 6px !important;
+}
+
+table {
+  width: 100% !important;
+}

@@ -6,6 +6,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Savings } from '../interfaces/savings';
 import { PaymentType } from '../interfaces/payment-type';
 import { format } from 'date-fns';
+import { HistoryByType } from '../interfaces/history-data';
 
 @Injectable({
   providedIn: 'root',
@@ -14,8 +15,7 @@ export class FinanceService {
   private db = inject(AngularFirestore);
   private authService = inject(AuthService);
 
-  constructor() {
-  }
+  constructor() {}
 
   // Add yearMonth stream
   private yearMonth$ = new BehaviorSubject<string>(
@@ -103,6 +103,28 @@ export class FinanceService {
 
   paymentTypeArray = toSignal(this.paymentType$, {
     initialValue: [] as PaymentType[],
+  });
+
+  overviewBalance = computed(() => this.budgetSum() - this.paymentSum());
+
+  groupedPayments = computed(() => {
+    const payments = this.paymentArray();
+    return payments.reduce((acc, item) => {
+      const type = item.type || 'Other';
+      if (!acc[type]) {
+        acc[type] = 0;
+      }
+      acc[type] += item.amount || 0;
+      return acc;
+    }, {} as Record<string, number>);
+  });
+
+  groupedPaymentsArray = computed(() => {
+    const grouped = this.groupedPayments();
+    return Object.entries(grouped).map(([type, amount]) => ({
+      type,
+      amount,
+    })) as HistoryByType[];
   });
 
   // Add method to change year-month

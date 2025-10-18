@@ -1,7 +1,7 @@
 <mat-toolbar color="white">
   <span>Dashboard</span>
   <span class="spacer"></span>
-  <mat-form-field style="padding-top: 25px; width: 150px;">
+  <mat-form-field style="padding-top: 25px; width: 150px">
     <input
       matInput
       [matDatepicker]="picker"
@@ -21,9 +21,19 @@
   <button mat-icon-button aria-label="Category" (click)="addCategory()">
     <mat-icon>label</mat-icon>
   </button>
+  <button mat-icon-button aria-label="History" routerLink="/history-data">
+    <mat-icon>history</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div class="col m-3">
+  @if(this.pastMonth){
+  <app-balance-card
+    title="Overview balance"
+    [amount]="financeService.overviewBalance()"
+    [dataSource]="[]"
+  ></app-balance-card>
+  }
   <app-balance-card
     title="Savings"
     [amount]="financeService.savingsTotal()"

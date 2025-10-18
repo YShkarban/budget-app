@@ -59,7 +59,7 @@ export class SavingswithdrawDialogComponent {
 
     const saving: Savings = {
       amount: -this.amount,
-      description: this.description,
+      description: 'Savings: ' + this.description,
       date: new Date(),
       user: user?.uid || 'defaultUser',
     };
