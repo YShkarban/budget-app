@@ -18,12 +18,23 @@
     >
     </mat-datepicker>
   </mat-form-field>
-  <button mat-icon-button aria-label="Category" (click)="addCategory()">
-    <mat-icon>label</mat-icon>
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="menu"
+    aria-label="Dashboard menu"
+  >
+    <mat-icon>more_vert</mat-icon>
   </button>
-  <button mat-icon-button aria-label="History" routerLink="/history-data">
-    <mat-icon>history</mat-icon>
-  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item aria-label="Category" (click)="addCategory()">
+      <mat-icon>label</mat-icon>
+      <span>Add category</span>
+    </button>
+    <button mat-menu-item aria-label="History" routerLink="/history-data">
+      <mat-icon>history</mat-icon>
+      <span>Report</span>
+    </button>
+  </mat-menu>
 </mat-toolbar>
 
 <div class="col m-3">
