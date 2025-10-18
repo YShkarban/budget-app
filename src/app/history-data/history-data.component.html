@@ -1,0 +1,44 @@
+<mat-toolbar color="white">
+  <button mat-icon-button aria-label="Back" routerLink="/dashboard">
+    <mat-icon>arrow_back_ios</mat-icon>
+  </button>
+  <span>Reports</span>
+  <span class="spacer"></span>
+  <mat-form-field style="padding-top: 25px; width: 150px">
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [value]="selectedDate"
+      (dateChange)="onDateChange($event)"
+      placeholder="Choose a month"
+    />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker
+      #picker
+      startView="year"
+      (monthSelected)="setMonthAndYear($event, picker)"
+      panelClass="month-picker"
+    >
+    </mat-datepicker>
+  </mat-form-field>
+</mat-toolbar>
+
+<mat-card class="m-2">
+  <mat-card-header>
+    <mat-card-title>History</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <table mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let element">{{ element.type }}</td>
+      </ng-container>
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+        <td mat-cell *matCellDef="let element">{{ element.amount }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayColumnsShow"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayColumnsShow"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>

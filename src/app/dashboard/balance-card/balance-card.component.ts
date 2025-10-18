@@ -29,8 +29,7 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatTableModule,
     MatIconModule,
     DatePipe,
-    A11yModule
-],
+  ],
   templateUrl: './balance-card.component.html',
   styleUrl: './balance-card.component.scss',
 })
@@ -46,6 +45,16 @@ export class BalanceCardComponent {
 
   displayedColumns: DisplayColumns[] = [];
   displayColumnsShow: string[] = [];
+
+  get sortedDataSource() {
+    return this.dataSource.sort((a, b) => {
+      return b.date.toDate().getTime() - a.date.toDate().getTime();
+    });
+  }
+
+  get historyShow() {
+    return this.dataSource.length > 0;
+  }
 
   ngOnInit() {
     this.displayedColumns = [
