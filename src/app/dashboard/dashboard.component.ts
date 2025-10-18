@@ -19,7 +19,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import * as _moment from 'moment';
 import { default as _rollupMoment } from 'moment';
-import { Router } from 'express';
 import { RouterLink } from "@angular/router";
 
 export const MY_FORMATS = {
@@ -50,14 +49,13 @@ export const MY_FORMATS = {
     MatDatepickerModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterLink
-],
+    RouterLink,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   providers: [provideMomentDateAdapter(MY_FORMATS)],
 })
 export class DashboardComponent implements OnInit {
-  //router = inject(Router);
   private dialog = inject(MatDialog);
   financeService = inject(FinanceService);
 
@@ -67,7 +65,7 @@ export class DashboardComponent implements OnInit {
   firstDay = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
   lastDay = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
 
-  selectedDate = new Date();
+  selectedDate = new Date(this.financeService.getCurrentYearMonth());
 
   pastMonth: boolean = false;
 

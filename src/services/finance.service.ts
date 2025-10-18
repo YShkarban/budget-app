@@ -134,6 +134,7 @@ export class FinanceService {
 
   // Get current year-month
   getCurrentYearMonth() {
-    return this.yearMonth$.getValue();
+    const yearMonth = format(new Date(), 'yyyy-MM');    
+    return this.yearMonth$.getValue() ?? yearMonth;
   }
 }
