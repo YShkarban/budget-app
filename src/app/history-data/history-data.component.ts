@@ -1,24 +1,31 @@
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, inject, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MatDatepicker,
+  MatDatepickerModule,
+} from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { Router } from 'express';
 import { FinanceService } from '../../services/finance.service';
 import { format } from 'date-fns';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import {
+  MatCard,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+} from '@angular/material/card';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { DatePipe } from '@angular/common';
 import { DisplayColumns } from '../../interfaces/display-columns';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { HistoryByType } from '../../interfaces/history-data';
-
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 export const MY_FORMATS = {
   parse: {
@@ -31,7 +38,6 @@ export const MY_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY',
   },
 };
-
 
 @Component({
   selector: 'app-history-data',
@@ -50,11 +56,11 @@ export const MY_FORMATS = {
     MatCardHeader,
     MatCardTitle,
     MatCardContent,
-    MatCardActions,
     MatTableModule,
-    DatePipe,
     RouterLink,
     MatSortModule,
+
+    BaseChartDirective,
   ],
   templateUrl: './history-data.component.html',
   styleUrl: './history-data.component.scss',
@@ -63,23 +69,28 @@ export const MY_FORMATS = {
 export class HistoryDataComponent implements AfterViewInit {
   financeService = inject(FinanceService);
 
-  displayedColumns: DisplayColumns[] = [];
-  displayColumnsShow: string[] = [];
-
   now = new Date();
   firstDay = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
   lastDay = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
 
-  selectedDate = new Date();
+  selectedDate = new Date(this.financeService.getCurrentYearMonth());
 
   dataSource: MatTableDataSource<HistoryByType>;
+  displayedColumns: DisplayColumns[] = [];
+  displayColumnsShow: string[] = [];
 
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   constructor() {
     this.dataSource = new MatTableDataSource(
       this.financeService.groupedPaymentsArray()
     );
+    effect(() => {
+      const data = this.financeService.groupedPaymentsArray();
+      this.dataSource.data = data;
+      this.updateChartsData();
+    });
   }
 
   ngOnInit() {
@@ -91,6 +102,9 @@ export class HistoryDataComponent implements AfterViewInit {
     this.displayColumnsShow = this.displayedColumns
       .filter((col) => col.show)
       .map((col) => col.name);
+
+    //this.updatePieChartData();
+    this.updateChartsData();
   }
 
   ngAfterViewInit() {
@@ -101,6 +115,7 @@ export class HistoryDataComponent implements AfterViewInit {
     this.selectedDate = date;
     const yearMonth = format(date, 'yyyy-MM');
     this.financeService.setYearMonth(yearMonth);
+    this.updateChartsData();
     datepicker.close();
   }
 
@@ -111,4 +126,106 @@ export class HistoryDataComponent implements AfterViewInit {
       this.financeService.setYearMonth(yearMonth);
     }
   }
+
+  public barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0,0,0,0.1)',
+        },
+      },
+    },
+  };
+
+  public barChartType: ChartType = 'bar';
+
+  public barChartData: ChartData<'bar'> = {
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        label: 'Expenses by Type',
+        backgroundColor: '#36A2EB',
+      },
+    ],
+  };
+
+  private updateChartsData() {
+    const groupedData = this.financeService.groupedPaymentsArray();
+
+    // Update bar chart
+    this.barChartData = {
+      labels: groupedData.map((item) => item.type),
+      datasets: [
+        {
+          data: groupedData.map((item) => item.amount),
+          label: 'Expenses by Type',
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#FF9F40',
+          ],
+        },
+      ],
+    };
+  }
+
+  // Pie
+  // public pieChartType: ChartType = 'pie';
+
+  // public pieChartOptions: ChartConfiguration['options'] = {
+  //   responsive: true,
+  //   plugins: {
+  //     legend: {
+  //       display: true,
+  //       position: 'top',
+  //     },
+  //   },
+  // };
+
+  // public pieChartData: ChartData<'pie'> = {
+  //   labels: [],
+  //   datasets: [
+  //     {
+  //       data: [],
+  //     },
+  //   ],
+  // };
+
+  // private updatePieChartData() {
+  //   const groupedData = this.financeService.groupedPaymentsArray();
+
+  //   this.pieChartData = {
+  //     labels: groupedData.map((item) => item.type),
+  //     datasets: [
+  //       {
+  //         data: groupedData.map((item) => item.amount),
+  //         backgroundColor: [
+  //           '#FF6384',
+  //           '#36A2EB',
+  //           '#FFCE56',
+  //           '#4BC0C0',
+  //           '#9966FF',
+  //           '#FF9F40',
+  //         ],
+  //       },
+  //     ],
+  //   };
+  // }
 }

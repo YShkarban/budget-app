@@ -23,6 +23,28 @@
   </mat-form-field>
 </mat-toolbar>
 
+ <!-- <div style="display: block">
+  <canvas baseChart
+      [data]="pieChartData"
+      [options]="pieChartOptions"
+      [type]="pieChartType">
+    </canvas>
+</div> -->
+
+<div>
+  <mat-card class="m-2">
+    <mat-card-content>
+      <canvas
+        baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [type]="barChartType"
+      >
+      </canvas>
+    </mat-card-content>
+  </mat-card>
+</div>
+
 <mat-card class="m-2">
   <mat-card-header>
     <mat-card-title>History</mat-card-title>
