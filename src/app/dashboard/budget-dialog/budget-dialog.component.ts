@@ -16,6 +16,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { FinanceService } from '../../../services/finance.service';
 
 @Component({
   selector: 'app-budget-dialog',
@@ -30,6 +33,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    MatButtonToggleModule,
+    MatDatepickerModule,
   ],
   templateUrl: './budget-dialog.component.html',
   styleUrl: './budget-dialog.component.scss',
@@ -39,11 +44,13 @@ export class BudgetDialogComponent {
   private afAuth = inject(AngularFireAuth);
   private db = inject(AngularFirestore);
   private snackbar = inject(MatSnackBar);
+  financeService = inject(FinanceService);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { selectedDate: Date }) {}
 
   amount: number = 0;
   description: string = '';
+  person: string = '';
 
   async send() {
     console.log(this.data.selectedDate);
@@ -57,6 +64,7 @@ export class BudgetDialogComponent {
       date: new Date(),
       user: user?.uid || 'defaultUser',
       month: month,
+      person: this.person,
     };
 
     const docId = `${userId}_${month.getFullYear()}-${month.getMonth() + 1}`;

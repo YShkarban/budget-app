@@ -55,6 +55,7 @@ export class SavingswithdrawDialogComponent {
       date: new Date(),
       user: user?.uid || 'defaultUser',
       month: month,
+      person: '',
     };
 
     const saving: Savings = {
@@ -62,6 +63,7 @@ export class SavingswithdrawDialogComponent {
       description: 'Savings: ' + this.description,
       date: new Date(),
       user: user?.uid || 'defaultUser',
+      person: '',
     };
 
     const docIdTransaction = `${userId}_${month.getFullYear()}-${month.getMonth() + 1}`;

@@ -10,7 +10,17 @@
 
     <mat-form-field class="w-100" appearance="outline">
       <mat-label>Description</mat-label>
-      <input matInput type="text" [(ngModel)]="description" />
+      <input
+        matInput
+        type="text"
+        [matAutocomplete]="descAuto"
+        [formControl]="descriptionControl"
+      />
+      <mat-autocomplete #descAuto="matAutocomplete">
+        @for (option of filteredDescriptions | async; track option) {
+        <mat-option [value]="option.name">{{ option.name }}</mat-option>
+        }
+      </mat-autocomplete>
     </mat-form-field>
     <form class="example-form">
       <mat-form-field class="w-100" appearance="outline">
@@ -30,6 +40,39 @@
         </mat-autocomplete>
       </mat-form-field>
     </form>
+
+    <div class="row">
+      <div class="col-12 col-md-6 mb-3">
+        <mat-button-toggle-group
+          [(ngModel)]="person"
+          name="fontStyle"
+          aria-label="Font Style"
+        >
+          @for (item of financeService.partnersArray(); track $index) {
+          <mat-button-toggle value="{{ item.name }}">{{
+            item.name
+          }}</mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </div>
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Choose a date</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="date" />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker
+            #picker
+            [startAt]="data.selectedDate"
+            [startView]="'month'"
+            (monthSelected)="picker.close()"
+          >
+          </mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
   </mat-card-content>
   <mat-card-actions>
     <button mat-button (click)="send()">Send</button>

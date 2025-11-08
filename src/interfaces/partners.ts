@@ -1,4 +1,4 @@
-export interface PaymentType {
+export interface Partners {
   id?: string;
   name: string;
 }

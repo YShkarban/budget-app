@@ -5,5 +5,6 @@ export interface Payment {
   description: string;
   month: Date;
   date: Date;
+  person: string;
   user: string;
 }

@@ -1,12 +1,20 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, combineLatest, filter, map, Observable, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  map,
+  Observable,
+  switchMap,
+} from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Savings } from '../interfaces/savings';
 import { PaymentType } from '../interfaces/payment-type';
 import { format } from 'date-fns';
 import { HistoryByType } from '../interfaces/history-data';
+import { Partners } from '../interfaces/partners';
 
 @Injectable({
   providedIn: 'root',
@@ -127,6 +135,42 @@ export class FinanceService {
     })) as HistoryByType[];
   });
 
+  // payment subtypes
+  paymentSubtype$ = this.db
+    .collection('payment-subtype')
+    .valueChanges({ idField: 'id' })
+    .pipe(
+      map((items: any[]) => {
+        // If items[0].name is an array, flatten it
+        if (items.length && Array.isArray(items[0].name)) {
+          return items[0].name.map((name: string) => ({ name }));
+        }
+        return items;
+      })
+    ) as Observable<PaymentType[]>;
+
+  paymentSubtypeArray = toSignal(this.paymentSubtype$, {
+    initialValue: [] as PaymentType[],
+  });
+
+  // partners
+  partners$ = this.db
+    .collection('partners')
+    .valueChanges({ idField: 'id' })
+    .pipe(
+      map((items: any[]) => {
+        // If items[0].name is an array, flatten it
+        if (items.length && Array.isArray(items[0].name)) {
+          return items[0].name.map((name: string) => ({ name }));
+        }
+        return items;
+      })
+    ) as Observable<Partners[]>;
+
+  partnersArray = toSignal(this.partners$, {
+    initialValue: [] as Partners[],
+  });
+
   // Add method to change year-month
   setYearMonth(yearMonth: string) {
     this.yearMonth$.next(yearMonth);
@@ -134,7 +178,7 @@ export class FinanceService {
 
   // Get current year-month
   getCurrentYearMonth() {
-    const yearMonth = format(new Date(), 'yyyy-MM');    
+    const yearMonth = format(new Date(), 'yyyy-MM');
     return this.yearMonth$.getValue() ?? yearMonth;
   }
 }

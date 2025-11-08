@@ -3,7 +3,7 @@
     <mat-card-title>{{ title }}</mat-card-title>
   </mat-card-header>
   <mat-card-content [style.align-self]="'center'" [style.color]="color">
-    <p>{{ amount }}zł</p>
+    <p>{{ amount | number : "1.2-2" }}zł</p>
   </mat-card-content>
   <mat-card-actions align="end">
     @if(title === 'Savings') {

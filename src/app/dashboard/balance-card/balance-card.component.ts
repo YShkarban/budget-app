@@ -12,9 +12,9 @@ import { SavingswithdrawDialogComponent } from '../savingswithdraw-dialog/saving
 import { MatTableModule } from '@angular/material/table';
 import { FinanceService } from '../../../services/finance.service';
 import { MatIconModule } from '@angular/material/icon';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { DisplayColumns } from '../../../interfaces/display-columns';
-import { A11yModule } from "@angular/cdk/a11y";
+import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-balance-card',
@@ -29,6 +29,7 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatTableModule,
     MatIconModule,
     DatePipe,
+    DecimalPipe,
   ],
   templateUrl: './balance-card.component.html',
   styleUrl: './balance-card.component.scss',
@@ -71,8 +72,15 @@ export class BalanceCardComponent {
 
   doSavingsWithdraw() {
     const dialogRef = this.dialog.open(SavingswithdrawDialogComponent);
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+    dialogRef.afterClosed().subscribe({
+      next: (result) => {
+        if (result === true) {
+          console.log('Savings withdrawal completed successfully');
+        }
+      },
+      complete: () => {
+        console.log('Dialog interaction completed');
+      },
     });
   }
 
