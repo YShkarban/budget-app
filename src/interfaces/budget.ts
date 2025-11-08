@@ -3,6 +3,7 @@ export interface Budget {
   amount: number;
   description: string;
   month: Date;
+  person: string;
   date: Date;
   user: string;
 }

@@ -16,6 +16,8 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Savings } from '../../../interfaces/savings';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { FinanceService } from '../../../services/finance.service';
 
 @Component({
   selector: 'app-savings-dialog',
@@ -30,6 +32,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './savings-dialog.component.html',
   styleUrl: './savings-dialog.component.scss',
@@ -39,9 +42,11 @@ export class SavingsDialogComponent {
   private afAuth = inject(AngularFireAuth);
   private db = inject(AngularFirestore);
   private snackbar = inject(MatSnackBar);
+  financeService = inject(FinanceService);
 
   amount: number = 0;
   description: string = '';
+  person: string = '';
 
   async send() {
     const user = await this.afAuth.currentUser;
@@ -51,6 +56,7 @@ export class SavingsDialogComponent {
     const saving: Savings = {
       amount: this.amount,
       description: this.description,
+      person: this.person,
       date: new Date(),
       user: user?.uid || 'defaultUser',
     };

@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, effect, inject, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  effect,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -26,6 +32,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { HistoryByType } from '../../interfaces/history-data';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { DecimalPipe } from '@angular/common';
 
 export const MY_FORMATS = {
   parse: {
@@ -59,8 +66,8 @@ export const MY_FORMATS = {
     MatTableModule,
     RouterLink,
     MatSortModule,
-
     BaseChartDirective,
+    DecimalPipe,
   ],
   templateUrl: './history-data.component.html',
   styleUrl: './history-data.component.scss',
@@ -84,10 +91,14 @@ export class HistoryDataComponent implements AfterViewInit {
 
   constructor() {
     this.dataSource = new MatTableDataSource(
-      this.financeService.groupedPaymentsArray()
+      this.financeService
+        .groupedPaymentsArray()
+        .sort((a, b) => b.amount - a.amount)
     );
     effect(() => {
-      const data = this.financeService.groupedPaymentsArray();
+      const data = this.financeService
+        .groupedPaymentsArray()
+        .sort((a, b) => b.amount - a.amount);
       this.dataSource.data = data;
       this.updateChartsData();
     });
@@ -164,9 +175,10 @@ export class HistoryDataComponent implements AfterViewInit {
   };
 
   private updateChartsData() {
-    const groupedData = this.financeService.groupedPaymentsArray();
+    const groupedData = this.financeService
+      .groupedPaymentsArray()
+      .sort((a, b) => b.amount - a.amount);
 
-    // Update bar chart
     this.barChartData = {
       labels: groupedData.map((item) => item.type),
       datasets: [
